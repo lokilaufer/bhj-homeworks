@@ -4,9 +4,9 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
+    this.timerElement = container.querySelector('.status__timer');
 
     this.reset();
-
     this.registerEvents();
   }
 
@@ -14,21 +14,60 @@ class Game {
     this.setNewWord();
     this.winsElement.textContent = 0;
     this.lossElement.textContent = 0;
+    this.clearTimer();
   }
 
   registerEvents() {
-    /*
-      TODO:
-      Написать обработчик события, который откликается
-      на каждый введённый символ.
-      В случае правильного ввода символа вызываем this.success()
-      При неправильном вводе символа - this.fail();
-      DOM-элемент текущего символа находится в свойстве this.currentSymbol.
-     */
+    // Обработчик нажатия клавиш
+    document.addEventListener('keyup', (event) => {
+      // Получаем введенный символ и приводим к нижнему регистру
+      const pressedKey = event.key.toLowerCase();
+
+      // Получаем текущий символ, который нужно ввести
+      const currentChar = this.currentSymbol.textContent.toLowerCase();
+
+      // Сравниваем символы (регистр не важен)
+      if (pressedKey === currentChar) {
+        this.success();
+      } else {
+        this.fail();
+      }
+    });
+  }
+
+  startTimer(wordLength) {
+    this.clearTimer();
+    this.timeLeft = wordLength;
+    this.updateTimerDisplay();
+
+    this.timerId = setInterval(() => {
+      this.timeLeft--;
+      this.updateTimerDisplay();
+
+      if (this.timeLeft <= 0) {
+        this.fail(); // Время вышло - поражение
+      }
+    }, 1000);
+  }
+
+  updateTimerDisplay() {
+    if (this.timerElement) {
+      this.timerElement.textContent = this.timeLeft;
+    }
+  }
+
+  clearTimer() {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
+    if (this.timerElement) {
+      this.timerElement.textContent = '';
+    }
   }
 
   success() {
-    if(this.currentSymbol.classList.contains("symbol_current")) this.currentSymbol.classList.remove("symbol_current");
+    this.currentSymbol.classList.remove("symbol_current");
     this.currentSymbol.classList.add('symbol_correct');
     this.currentSymbol = this.currentSymbol.nextElementSibling;
 
@@ -40,22 +79,25 @@ class Game {
     if (++this.winsElement.textContent === 10) {
       alert('Победа!');
       this.reset();
+    } else {
+      this.setNewWord();
     }
-    this.setNewWord();
   }
 
   fail() {
-    if (++this.lossElement.textContent === 5) {
+    this.clearTimer();
+    if (++this.lossElement.textContent === 3) {
       alert('Вы проиграли!');
       this.reset();
+    } else {
+      this.setNewWord();
     }
-    this.setNewWord();
   }
 
   setNewWord() {
     const word = this.getWord();
-
     this.renderWord(word);
+    this.startTimer(word.length);
   }
 
   getWord() {
@@ -90,5 +132,4 @@ class Game {
   }
 }
 
-new Game(document.getElementById('game'))
-
+new Game(document.getElementById('game'));
