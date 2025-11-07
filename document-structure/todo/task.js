@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     const tasksContainer = document.getElementById('tasks');
     const taskInput = document.getElementById('taskInput');
+    const addButton = document.getElementById('addButton'); // Добавляем кнопку
 
     // Загружаем задачи из localStorage
     loadTasks();
 
-    // Обработчик нажатия Enter в поле ввода
-    taskInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter' && taskInput.value.trim() !== '') {
+    // Обработчик клика по кнопке "Добавить"
+    addButton.addEventListener('click', function() {
+        if (taskInput.value.trim() !== '') {
             addTask(taskInput.value.trim());
             taskInput.value = '';
         }
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('tasks', JSON.stringify(filteredTasks));
     }
 
-    // добавлена для исправления ошибки
+    // Функция экранирования HTML
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
