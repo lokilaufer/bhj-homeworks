@@ -1,17 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const tasksContainer = document.getElementById('tasks');
-    const taskInput = document.getElementById('taskInput');
-    const addButton = document.getElementById('addButton'); // Добавляем кнопку
+
+    const tasksContainer = document.getElementById('tasks__list');
+    const taskInput = document.getElementById('task__input');
+    const addButton = document.getElementById('tasks__add');
+    const form = document.getElementById('tasks__form');
 
     // Загружаем задачи из localStorage
     loadTasks();
 
     // Обработчик клика по кнопке "Добавить"
-    addButton.addEventListener('click', function() {
-        if (taskInput.value.trim() !== '') {
-            addTask(taskInput.value.trim());
-            taskInput.value = '';
-        }
+    addButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        addTaskIfValid();
+    });
+
+    // Обработчик сабмита формы
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        addTaskIfValid();
     });
 
     // Один обработчик для всех кнопок удаления
@@ -21,6 +27,15 @@ document.addEventListener('DOMContentLoaded', function() {
             removeTask(event.target.closest('.task'));
         }
     });
+
+    // Функция проверки и добавления задачи
+    function addTaskIfValid() {
+        if (taskInput.value.trim() !== '') {
+            addTask(taskInput.value.trim());
+            taskInput.value = '';
+            taskInput.focus(); // Возвращаем фокус на поле ввода
+        }
+    }
 
     // Функция добавления задачи
     function addTask(taskText) {
